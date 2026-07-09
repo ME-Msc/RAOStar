@@ -9,8 +9,7 @@ utility of the path taken.
 import sys
 from models.r2d2model import R2D2Model
 from raostar import RAOStar
-import graph_to_json
-from iterative_raostar import *
+import iterative_raostar
 import random
 
 
@@ -66,7 +65,7 @@ if __name__ == '__main__':
     algo = RAOStar(model, cc=cc, debugging=False)
     b_init = {(1, 0, 0): 1.0}
     P, G = algo.search(b_init)
-    P = clean_policy(P)  # remove empty policies
+    P = iterative_raostar.clean_policy(P)  # remove empty policies
 
     num_crashes = 0
     num_successes = 0

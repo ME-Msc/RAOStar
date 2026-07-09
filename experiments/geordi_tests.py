@@ -4,8 +4,15 @@
 # email: mdeyo@mit.edu
 # simple vehicle models based on MERS Toyota work for rao star
 
-from models.vehicle_model import *
-from models.geordi_road_model import *
+from models.vehicle_model import (
+    GeordiModel,
+    VehicleModel,
+    VehicleState,
+    merge_left_action,
+    merge_right_action,
+    move_forward_action,
+)
+from models.geordi_road_model import highway_2_lanes_offramp_ex
 from raostar import RAOStar
 
 road_model = highway_2_lanes_offramp_ex()

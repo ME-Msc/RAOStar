@@ -1,7 +1,15 @@
 
-from belief import *
 import numpy as np
-from continuous_belief import *
+import matplotlib.pyplot as plt
+from matplotlib.collections import LineCollection
+from scipy.stats import norm
+
+from continuous_belief import (
+    ContinuousBeliefState,
+    cont_belief_update,
+    dynamic_obs_risk,
+    plot_belief_state,
+)
 
 a1 = 2
 bb1 = -2

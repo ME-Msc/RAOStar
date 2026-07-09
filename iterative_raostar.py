@@ -1,6 +1,4 @@
-from models.r2d2model import R2D2Model
-from raostar import RAOStar
-from belief import *
+from belief import BeliefState
 
 ###############
 # This one should result in a policy of RIGHT at (1,1)

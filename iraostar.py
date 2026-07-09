@@ -12,7 +12,7 @@ from collections import deque
 from raostarhypergraph import RAOStarGraphNode, RAOStarGraphOperator, RAOStarHyperGraph
 from belief import BeliefState, avg_func, bound_prob
 from belief import predict_belief, update_belief, compute_observation_distribution, is_terminal_belief
-from iterative_raostar import *
+import iterative_raostar
 
 
 class iRAO_Executive(object):
@@ -24,7 +24,7 @@ class iRAO_Executive(object):
 
         # start with graph and policy being None and spent_risk = 0
         P, G = self.planner.incremental_search(initial_belief, None, None, 0)
-        P = clean_policy(P)
+        P = iterative_raostar.clean_policy(P)
         model.print_model()
         model.print_policy(P)
         # print(P)

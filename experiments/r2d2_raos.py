@@ -7,8 +7,7 @@
 import sys
 from models.r2d2model import R2D2Model
 from raostar import RAOStar
-import graph_to_json
-from iterative_raostar import *
+import iterative_raostar
 
 # Now you can give command line cc argument after filename
 if __name__ == '__main__':
@@ -24,19 +23,19 @@ if __name__ == '__main__':
     b_init = {(1, 0, 0): 1.0}
     P, G = algo.search(b_init)
     print(P)
-    P = clean_policy(P)
+    P = iterative_raostar.clean_policy(P)
 
     model.print_model()
     model.print_policy(P)
     print(P)
 
-    most_likely_policy(G, model)
+    iterative_raostar.most_likely_policy(G, model)
 
     print(len(G.nodes), G.nodes)
     print(G.root)
-    next = next_child(G, G.root)
-    next = next_child(G, next)
-    next = next_child(G, next)
+    next = iterative_raostar.next_child(G, G.root)
+    next = iterative_raostar.next_child(G, next)
+    next = iterative_raostar.next_child(G, next)
     G.update_root_and_purge(next)
     print(len(G.nodes), G.nodes)
     # print(G.all_descendants(G.root))

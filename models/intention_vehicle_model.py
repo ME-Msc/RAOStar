@@ -6,7 +6,6 @@
 
 import numpy as np
 import copy
-from pprint import pformat
 import pickle
 import matplotlib.pyplot as plt
 

@@ -7,14 +7,6 @@
 import sys
 from models.grid_model import GRIDModel
 from raostar import RAOStar
-import graph_to_json
-import time
-import copy
-import numpy as np
-from collections import deque
-import matplotlib.pyplot as plt
-from scipy.interpolate import interp1d
-# from iterative_raostar import *
 
 # Now you can give command line cc argument after filename
 if __name__ == '__main__':

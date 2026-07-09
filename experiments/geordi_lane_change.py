@@ -4,11 +4,18 @@
 # email: huangxin@mit.edu
 # simple vehicle left turn scenario used for ICAPS19-intention 
 
-from models.intention_vehicle_model import *
-from models.geordi_road_model import *
+from models.intention_vehicle_model import (
+    GeordiModel,
+    VehicleModel,
+    VehicleState,
+    agent_slow_forward_action,
+    ego_forward_action,
+    ego_merge_left_action,
+    ego_merge_right_action,
+)
+from models.geordi_road_model import highway_2_lanes
 from raostar import RAOStar
 from pprint import pprint
-import ast
 
 def prettyprint(policy):
 	for keys, values in policy.items():

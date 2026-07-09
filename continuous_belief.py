@@ -6,10 +6,8 @@
 # yunchang@mit.edu
 
 import numpy as np
-import matplotlib.pyplot as plt
 from matplotlib.patches import Ellipse
 from scipy.stats import norm
-from matplotlib.collections import LineCollection
 from scipy.spatial import ConvexHull
 
 

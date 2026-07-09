@@ -5,25 +5,17 @@
 # Grid model as simple model to test rao star
 
 import sys
-from models.hybrid_rover_model import *
+from models.hybrid_rover_model import GaussianState, HybridRoverModel
 from raostar import RAOStar
-import graph_to_json
-import time
-import copy
 import numpy as np
 from collections import deque
 import matplotlib.pyplot as plt
-from scipy.interpolate import interp1d
-from shapely.geometry import *
-import matplotlib
-from matplotlib.collections import PatchCollection
-from descartes import *
+from shapely.geometry import Polygon
+from descartes import PolygonPatch
 
 import numpy as np
 from scipy.interpolate import griddata
 import matplotlib.pyplot as plt
-import numpy.ma as ma
-from numpy.random import uniform, seed
 from matplotlib import cm
 from scipy.stats import multivariate_normal
 
@@ -168,5 +160,4 @@ if __name__ == '__main__':
     algo.extract_policy()
     print(P)
     extract_policy(algo.graph,obstacles,goal)
-
 

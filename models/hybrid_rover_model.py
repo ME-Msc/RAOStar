@@ -6,14 +6,9 @@
 
 import math
 import numpy as np
-import time
-from belief import BeliefState
 from scipy.stats import norm
-from matplotlib.collections import LineCollection
 from scipy.spatial import ConvexHull
-
-# from continuous_belief import *
-from shapely.geometry import *
+from shapely.geometry import Point, Polygon
 
 class HybridRoverModel(object):
 

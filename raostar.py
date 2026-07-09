@@ -228,7 +228,7 @@ class RAOStar(object):
             self.debug('\n', node.state.state_print(),
                        'likelihood:', parent_l)
 
-            if node.best_action != None:  # node already has a best action
+            if node.best_action is not None:  # node already has a best action
                 self.debug('best_action:', node.best_action.name)
                 expanded.append(node)
                 children = self.graph.hyperedge_successors(
@@ -268,7 +268,7 @@ class RAOStar(object):
             action_ids = set()  # Uses str(a) as ID
             for particle_key, particle_prob in belief.items():
                 new_actions = [a for a in A(
-                    particle_key) if not str(a) in action_ids]
+                    particle_key) if str(a) not in action_ids]
                 # add action and make sure no overlap
                 all_node_actions.extend(new_actions)
                 action_ids.update([str(a) for a in new_actions])
@@ -623,7 +623,7 @@ class RAOStar(object):
                 Z.append(node)
                 for parent in self.graph.all_node_ancestors(node):
                     parent = parent[0]
-                    if not parent.terminal and parent.best_action != None:
+                    if not parent.terminal and parent.best_action is not None:
                         if node in self.graph.hyperedge_successors(parent, parent.best_action):
                             queue.append(parent)
         return Z
@@ -638,7 +638,7 @@ class RAOStar(object):
         k=0
         while len(queue) > 0:
             node = queue.popleft()
-            if node.best_action != None:
+            if node.best_action is not None:
                 policy[(node.name,node.probability,node.depth)] = node.best_action.name
                 children = self.graph.hyperedges[node][node.best_action]
                 for c in children:

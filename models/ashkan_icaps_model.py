@@ -17,7 +17,7 @@ _____________
 
 import numpy as np
 from scipy.stats import norm
-from continuous_belief import *
+from continuous_belief import ContinuousBeliefState, cont_belief_update
 
 
 class Ashkan_ICAPS_Model(object):

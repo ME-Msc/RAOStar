@@ -52,7 +52,7 @@ def policy_to_json(G, cc, filename, settings=default_settings):
     e_ind = 0  # edges str index
     while len(queue) > 0:
         node = queue.popleft()
-        if node.best_action != None:
+        if node.best_action is not None:
             children = G.hyperedges[node][node.best_action]
             edge_str = "edge-%d" % (e_ind)
             # store edge information

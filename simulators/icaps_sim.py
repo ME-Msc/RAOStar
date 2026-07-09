@@ -4,26 +4,17 @@
 # Matt Deyo 2017
 # mdeyo@mit.edu
 
-try:
-    from tkinter import *
-except ImportError:
-    try:
-        from Tkinter import *
-    except ImportError:
-        Tk = None
-        Canvas = None
-        LAST = "last"
-import time
+import tkinter as tk
 import numpy as np
-from iterative_raostar import *
+import iterative_raostar
 
 
 class Simulator(object):
     def __init__(self, X_DIM, Y_DIM, graph, policy, model, grid_size=100):
-        if Tk is None or Canvas is None:
+        if tk is None:
             raise ImportError("tkinter is required to use the ICAPS simulator")
         # note the policy here is the sorted one
-        self.master = Tk()
+        self.master = tk.Tk()
         self.master.title(model.name)
         # self.master.title("Hello world"
 
@@ -34,7 +25,7 @@ class Simulator(object):
         self.margin = 1.5 * grid_size
         self.w = self.X_DIM * grid_size + self.X_DIM + 1
         self.h = self.Y_DIM * grid_size + self.Y_DIM + 1
-        self.C = Canvas(self.master, width=self.w + 2 *
+        self.C = tk.Canvas(self.master, width=self.w + 2 *
                         self.margin, height=self.h + 2 * self.margin)
         self.C.pack()
 
@@ -146,7 +137,7 @@ class Simulator(object):
                         (arrow_dir[1] * self.model.vel * self.gs) / 2
                     # print(center_x, center_y, arrow_x, arrow_y)
 
-                    self.C.create_line(center_x, center_y, arrow_x, arrow_y, arrow=LAST,
+                    self.C.create_line(center_x, center_y, arrow_x, arrow_y, arrow=tk.LAST,
                                        width=5, arrowshape=(16, 20, 6))
         else:
             print('no best_action')
@@ -248,7 +239,7 @@ class Simulator(object):
             self.master.quit()
         else:
             if event.char == 'w':
-                self.current_state = most_likely_next_state(
+                self.current_state = iterative_raostar.most_likely_next_state(
                     self.graph, self.model, self.current_state)
                 self.draw_ego(self.current_state)
                 self.update_agent(self.current_state)
@@ -256,7 +247,7 @@ class Simulator(object):
                 self.master.update()
 
             elif event.char == 'a':
-                self.current_state = agent_move_next_state(
+                self.current_state = iterative_raostar.agent_move_next_state(
                     self.graph, self.model, self.current_state, "LEFT")
                 self.draw_ego(self.current_state)
                 self.update_agent(self.current_state)
@@ -264,7 +255,7 @@ class Simulator(object):
                 self.master.update()
 
             elif event.char == 'd':
-                self.current_state = agent_move_next_state(
+                self.current_state = iterative_raostar.agent_move_next_state(
                     self.graph, self.model, self.current_state, "RIGHT")
                 self.draw_ego(self.current_state)
                 self.update_agent(self.current_state)

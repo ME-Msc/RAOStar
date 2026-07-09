@@ -8,7 +8,6 @@ from simulators import quad_sim
 
 from models.quad_model import QuadModel
 from raostar import RAOStar
-import numpy as np 
 
 #### Run RAO star on Scenario ####
 # Simulation conditions 

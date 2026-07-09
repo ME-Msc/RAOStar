@@ -6,7 +6,7 @@
 
 from models.fismodel import fire_ice_sand_Model
 from raostar import RAOStar
-from iterative_raostar import *
+import iterative_raostar
 
 chance_constraint = 0.15
 
@@ -19,12 +19,12 @@ algo = RAOStar(model, cc=chance_constraint, debugging=False)
 b_init = {(start[0], start[1], 0): 1.0}
 P, G = algo.search(b_init)
 
-P = clean_policy(P)
+P = iterative_raostar.clean_policy(P)
 
 model.print_model()
 model.print_policy(P)
 
-most_likely_policy(G, model)
+iterative_raostar.most_likely_policy(G, model)
 
 # g = graph_to_json.policy_to_json(G, chance_constraint, "results/r2d2_raos.json")
 # print(g)

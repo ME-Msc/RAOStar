@@ -1,5 +1,4 @@
-from tkinter import *
-import time
+import tkinter as tk
 import numpy as np
 
 from bebop_api_client import Bebop
@@ -15,14 +14,14 @@ def grid2bebop(x,y,theta):
 class Simulator(object):
     def __init__(self, X_DIM, Y_DIM, policy, model, init_state, grid_size=100, bebop=False):
         # note the policy here is the sorted one
-        self.master = Tk()
+        self.master = tk.Tk()
         w = X_DIM * grid_size + X_DIM + 1
         h = Y_DIM * grid_size + Y_DIM + 1
         self.X_DIM = X_DIM
         self.Y_DIM = Y_DIM
         self.w = w
         self.h = h
-        self.C = Canvas(self.master, width=w, height=h)
+        self.C = tk.Canvas(self.master, width=w, height=h)
         self.C.pack()
         self.gs = grid_size
         self.quad_poly = None

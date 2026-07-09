@@ -10,13 +10,12 @@
 import operator
 import numpy as np
 import time
-import random
 from collections import deque
 
 from raostarhypergraph import RAOStarGraphNode, RAOStarGraphOperator, RAOStarHyperGraph
 from belief import BeliefState, avg_func, bound_prob
 from belief import predict_belief, update_belief, compute_observation_distribution, is_terminal_belief
-from enumtree import *
+from enumtree import EnumTree, EnumTreeNode
 
 class RAOStar(object):
     # find optimal policy and/or tree representing partially

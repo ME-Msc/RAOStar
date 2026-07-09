@@ -10,8 +10,6 @@ from raostar import RAOStar
 
 import graph_to_json
 
-from iterative_raostar import *
-
 #### Run RAO star on Scenario ####
 # Simulation conditions 
 world_size = (7,7) # note the boundaries are walls 
@@ -40,4 +38,3 @@ P, G = algo.search(b_init)
 # most_likely_policy(G, model)
 
 gshow = graph_to_json.policy_to_json(G, 0.5, 'quadraos.json')
-

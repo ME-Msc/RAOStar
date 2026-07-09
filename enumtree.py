@@ -41,10 +41,8 @@ Enumeration Tree for systematic search
 """
 
 
-import sys
 import string
 import random
-from collections import deque
 
 
 class EnumTreeElement(object):

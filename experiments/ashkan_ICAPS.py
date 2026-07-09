@@ -1,8 +1,8 @@
 from raostar import RAOStar
-from models.ashkan_icaps_model import *
-from iterative_raostar import *
-from simulators.icaps_sim import *
-import numpy as np
+from continuous_belief import ContinuousBeliefState
+from models.ashkan_icaps_model import Ashkan_ICAPS_Model
+from simulators.icaps_sim import Simulator
+import iterative_raostar
 import sys
 import graph_to_json
 
@@ -26,7 +26,7 @@ if __name__ == '__main__':
     b0.set_agent_coords(agent_coords[0], agent_coords[1])
     P, G = algo.search(b0)
 
-    most_likely_policy(G, model)
+    iterative_raostar.most_likely_policy(G, model)
     Sim = Simulator(10, 10, G, P, model, grid_size=50)
 
     # Convert all matrices to strings for json

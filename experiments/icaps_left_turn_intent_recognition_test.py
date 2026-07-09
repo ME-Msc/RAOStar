@@ -4,14 +4,12 @@
 # email: huangxin@mit.edu
 # simple vehicle left turn scenario used for ICAPS19-intention 
 
-from models.intention_vehicle_model import *
-from models.geordi_road_model import *
-from raostar import RAOStar
-from pprint import pprint
-import ast
+import os
+import pickle
+import sys
+
 import numpy as np
 import random
-import matplotlib.pyplot as plt
 
 
 # get pft data
