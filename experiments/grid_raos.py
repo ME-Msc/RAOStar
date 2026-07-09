@@ -1,4 +1,11 @@
 #!/usr/bin/env python
+try:
+    from ._bootstrap import ensure_project_paths
+except ImportError:
+    from _bootstrap import ensure_project_paths
+
+ensure_project_paths()
+
 
 # author: Sungkweon Hong
 # email: sk5050@mit.edu

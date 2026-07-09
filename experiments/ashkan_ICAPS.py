@@ -1,9 +1,16 @@
+try:
+    from ._bootstrap import ensure_project_paths
+except ImportError:
+    from _bootstrap import ensure_project_paths
+
+ensure_project_paths()
+
 from utils import import_models
 import_models()
 from raostar import RAOStar
 from ashkan_icaps_model import *
 from iterative_raostar import *
-from icaps_sim import *
+from simulators.icaps_sim import *
 import numpy as np
 import sys
 import graph_to_json

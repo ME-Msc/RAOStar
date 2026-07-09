@@ -1,4 +1,11 @@
 #!/usr/bin/env python
+try:
+    from ._bootstrap import ensure_project_paths
+except ImportError:
+    from _bootstrap import ensure_project_paths
+
+ensure_project_paths()
+
 
 # Visual sim for rao* implementation on icaps continuous model
 # Matt Deyo 2017

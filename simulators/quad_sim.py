@@ -1,3 +1,10 @@
+try:
+    from ._bootstrap import ensure_project_paths
+except ImportError:
+    from _bootstrap import ensure_project_paths
+
+ensure_project_paths()
+
 from Tkinter import *
 import time
 import numpy as np

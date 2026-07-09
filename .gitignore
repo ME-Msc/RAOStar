@@ -1,4 +1,40 @@
-# ignore compiled python
-*.pyc
-# ignore json results
+# Python bytecode and caches
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Virtual environments
+.venv/
+venv/
+env/
+ENV/
+
+# Packaging and build outputs
+build/
+dist/
+*.egg-info/
+.eggs/
+
+# Test, lint, and coverage caches
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+
+# Local notebooks and interpreter files
+.ipynb_checkpoints/
+
+# IDE and OS local files
+.vscode/
+.idea/
+*.swp
+*.swo
+.DS_Store
+
+# Logs and local run artifacts
+*.log
+*.out
+
+# Generated JSON results
 *.json

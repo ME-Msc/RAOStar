@@ -1,3 +1,10 @@
+try:
+    from ._bootstrap import ensure_project_paths
+except ImportError:
+    from _bootstrap import ensure_project_paths
+
+ensure_project_paths()
+
 # author: Matt Deyo
 '''
 Simulate execution of RAO* policies, using the prob distributions from the models.

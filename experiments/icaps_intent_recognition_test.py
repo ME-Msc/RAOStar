@@ -1,4 +1,11 @@
 #!/usr/bin/env python
+try:
+    from ._bootstrap import ensure_project_paths
+except ImportError:
+    from _bootstrap import ensure_project_paths
+
+ensure_project_paths()
+
 
 # author: Cyrus Huang
 # email: huangxin@mit.edu
@@ -64,8 +71,7 @@ crashes = []
 times = []
 test_maneuvers = []
 hits = []
-dist_errors = []
-n_tests = 1000
+n_tests = 100
 for i in range(n_tests):
 
     # get a random testing trajectory
@@ -93,14 +99,12 @@ for i in range(n_tests):
         # print(obs.shape)
         
         p_m_new = np.array([0.5, 0.5])
-        best_indices = []
-        best_positions = []
+        best_positions = [0,0]
         for k, m in enumerate(maneuvers):
             pft = pfts[k]
             # pft.pos_sigma = pft.pos_sigma*4
             best_index, likelihood, best_pos = pft.calculateMostLikelyPointPDF(obs)
-            best_indices.append(best_index)
-            best_positions.append(best_pos)
+            best_positions[k] = best_pos
             p_m_new[k] = likelihood
 
         p_m[0] = p_m[0] * p_m_new[0]
@@ -119,33 +123,72 @@ for i in range(n_tests):
 
         # compute the average displacement error
         if p_m[0] >= p_m[1]:
-            est_pos = best_positions[0]
-            est_ind = best_indices[0]
-            est_fut_pos = pfts[0].pos_mu[-1]
-            est_pos_diff = [est_fut_pos[0]-est_pos[0], est_fut_pos[1]-est_pos[1]]
-        else:
-            est_pos = best_positions[1]
-            est_ind = best_indices[1]
-            est_fut_pos = pfts[1].pos_mu[-1]
-            est_pos_diff = [est_fut_pos[0]-est_pos[0], est_fut_pos[1]-est_pos[1]]
+            best_pos = best_positions[0]
+            current_pos = traj[j-10,:]
 
-        # print('-------------------')
-        # print(est_pos_diff)
-
-        current_pos = traj[j-10,:]
-        future_index = j-10+24-est_ind
-        if future_index >= 0 and future_index <= 24:
-            future_pos = traj[future_index,:]
-            pos_diff = [future_pos[0]-current_pos[0],future_pos[1]-current_pos[1]]
-            # print(pos_diff)
-            dist_error = np.sqrt((pos_diff[0]-est_pos_diff[0])**2 + (pos_diff[1]-est_pos_diff[1])**2)
-            dist_errors.append(dist_error)
+            print(best_pos)
+            print(current_pos)
+            print(1/0)
 
  
 hits = np.array(hits)
 print(hits)
 print(np.sum(hits)*1.0/len(hits))
 
-dist_errors = np.array(dist_errors)
-print(dist_errors)
-print(np.mean(dist_errors))
+    #     # assume an open road
+    #     road_model = intersection_left_turn_ex()
+
+    #     # add an ego vehicle that can choose from stop (wait) and turn
+    #     ego_vehicle = VehicleModel('Ego', VehicleState(
+    #         state={'x': 88, 'y': 180, 'yaw': 90}), isControllable=True)
+    #     ego_vehicle.add_action(stop_action(ego=True))
+    #     ego_vehicle.add_action(turn_left_action(ego=True))
+
+    #     # add an agent vehicle that can go forward or slow down
+    #     agent1_vehicle = VehicleModel('Agent1', VehicleState(
+    #         state={'x': 92, 'y': 240, 'yaw': 270}))
+    #     # probability distribution of forward action
+    #     # p = random.uniform(0,1)
+    #     agent1_vehicle.add_action(agent_forward_action(p_m[0]))
+    #     agent1_vehicle.add_action(agent_slow_down_action(p_m[1]))
+
+    #     # geordi_model = GeordiModel()
+    #     geordi_model = GeordiModel(
+    #         [ego_vehicle, agent1_vehicle], road_model, goal_state=(100,200))
+    #     # print(geordi_model.road_model)
+    #     actions = geordi_model.get_available_actions(geordi_model.current_state)
+    #     # print(actions)
+    #     # print(agent1_vehicle.action_list[0].precondition_check(agent1_vehicle.name,
+    #     #                                                        geordi_model.current_state, geordi_model))
+
+    #     new_states = geordi_model.state_transitions(
+    #         geordi_model.current_state, actions[0])
+
+    #     # print('new_states', new_states)
+
+    #     algo = RAOStar(geordi_model, cc=0.1, debugging=False, cc_type='o', fixed_horizon = 3)
+
+    #     b_init = {geordi_model.current_state: 1.0}
+    #     P, G = algo.search(b_init)
+
+    #     print(P)
+    #     if len(P.keys()) == 1 and m_idx == 0:
+    #         print("Crashed", maneuver)
+    #         crash = 1
+    #         j = 0
+    #         break
+        
+    #     if len(P.keys()) == 1:
+    #         print("Turn safely")
+    #         break
+
+    # times.append((j+1)/30.0*4.8)
+    # crashes.append(crash)
+
+# crashes = np.array(crashes)
+# times = np.array(times)
+# print(np.sum(crashes)*1.0/len(crashes))
+# print(np.mean(times))
+# print(crashes)
+# print(test_maneuvers)
+# print(times)
