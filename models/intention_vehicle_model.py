@@ -17,7 +17,10 @@ PFT_DIR = os.path.join(WORKSPACE_DIR,'PFT')
 sys.path.insert(0, PFT_DIR)
 
 # get pft modules and pft data
-import pft # need to get pft modules
+try:
+    import pft # need to get pft modules
+except ImportError:
+    pft = None
 PFT_DATA_DIR = os.path.join(PFT_DIR,'pft_data')
 
 def calculate_permutations(model, state, actions, d):
@@ -374,6 +377,11 @@ class GeordiModel(object):
         return risk
 
     def load_pft(self, action_name):
+        if pft is None:
+            raise ImportError(
+                "The PFT dependency is required for intention vehicle risk. "
+                "Expected PFT package/data under {}".format(PFT_DIR)
+            )
         action_name = ''.join([i for i in action_name if not i.isdigit()])
         pft_path = os.path.join(PFT_DATA_DIR, '%s_pft_short.pkl' % (action_name))
         with open(pft_path, 'rb') as f_snap:

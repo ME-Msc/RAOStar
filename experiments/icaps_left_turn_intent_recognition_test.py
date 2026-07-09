@@ -1,20 +1,11 @@
 #!/usr/bin/env python
-try:
-    from ._bootstrap import ensure_project_paths
-except ImportError:
-    from _bootstrap import ensure_project_paths
-
-ensure_project_paths()
-
 
 # author: Cyrus Huang
 # email: huangxin@mit.edu
 # simple vehicle left turn scenario used for ICAPS19-intention 
 
-from utils import import_models
-import_models()
-from intention_vehicle_model import *
-from geordi_road_model import *
+from models.intention_vehicle_model import *
+from models.geordi_road_model import *
 from raostar import RAOStar
 from pprint import pprint
 import ast

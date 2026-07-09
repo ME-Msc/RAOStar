@@ -1,10 +1,3 @@
-try:
-    from ._bootstrap import ensure_project_paths
-except ImportError:
-    from _bootstrap import ensure_project_paths
-
-ensure_project_paths()
-
 # author: Matt Deyo
 '''
 Simulate execution of RAO* policies, using the prob distributions from the models.
@@ -14,9 +7,7 @@ utility of the path taken.
 '''
 
 import sys
-from utils import import_models
-import_models()
-from r2d2model import R2D2Model
+from models.r2d2model import R2D2Model
 from raostar import RAOStar
 import graph_to_json
 from iterative_raostar import *

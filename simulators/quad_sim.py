@@ -1,16 +1,8 @@
-try:
-    from ._bootstrap import ensure_project_paths
-except ImportError:
-    from _bootstrap import ensure_project_paths
-
-ensure_project_paths()
-
-from Tkinter import *
+from tkinter import *
 import time
 import numpy as np
 
-
-from bebop_api_client import Bebop 
+from bebop_api_client import Bebop
 
 def grid2bebop(x,y,theta):
     # map descrete grid coordinates to bebop coord 

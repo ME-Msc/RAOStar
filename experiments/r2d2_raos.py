@@ -1,20 +1,11 @@
 #!/usr/bin/env python
-try:
-    from ._bootstrap import ensure_project_paths
-except ImportError:
-    from _bootstrap import ensure_project_paths
-
-ensure_project_paths()
-
 
 # author: Yun Chang
 # email: yunchang@mit.edu
 # rao* on r2d2 model
 
 import sys
-from utils import import_models
-import_models()
-from r2d2model import R2D2Model
+from models.r2d2model import R2D2Model
 from raostar import RAOStar
 import graph_to_json
 from iterative_raostar import *

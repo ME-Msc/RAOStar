@@ -1,20 +1,11 @@
 #!/usr/bin/env python
-try:
-    from ._bootstrap import ensure_project_paths
-except ImportError:
-    from _bootstrap import ensure_project_paths
-
-ensure_project_paths()
-
 
 # author: Sungkweon Hong
 # email: sk5050@mit.edu
 # Grid model as simple model to test rao star
 
 import sys
-from utils import import_models
-import_models()
-from hybrid_rover_model import *
+from models.hybrid_rover_model import *
 from raostar import RAOStar
 import graph_to_json
 import time

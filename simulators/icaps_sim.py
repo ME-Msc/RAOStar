@@ -1,17 +1,18 @@
 #!/usr/bin/env python
-try:
-    from ._bootstrap import ensure_project_paths
-except ImportError:
-    from _bootstrap import ensure_project_paths
-
-ensure_project_paths()
-
 
 # Visual sim for rao* implementation on icaps continuous model
 # Matt Deyo 2017
 # mdeyo@mit.edu
 
-from Tkinter import *
+try:
+    from tkinter import *
+except ImportError:
+    try:
+        from Tkinter import *
+    except ImportError:
+        Tk = None
+        Canvas = None
+        LAST = "last"
 import time
 import numpy as np
 from iterative_raostar import *
@@ -19,6 +20,8 @@ from iterative_raostar import *
 
 class Simulator(object):
     def __init__(self, X_DIM, Y_DIM, graph, policy, model, grid_size=100):
+        if Tk is None or Canvas is None:
+            raise ImportError("tkinter is required to use the ICAPS simulator")
         # note the policy here is the sorted one
         self.master = Tk()
         self.master.title(model.name)

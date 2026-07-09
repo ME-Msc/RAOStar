@@ -1,6 +1,4 @@
-from utils import import_models
-import_models()
-from r2d2model import R2D2Model
+from models.r2d2model import R2D2Model
 from raostar import RAOStar
 from belief import *
 

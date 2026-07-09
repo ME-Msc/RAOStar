@@ -1,19 +1,10 @@
 #!/usr/bin/env python
-try:
-    from ._bootstrap import ensure_project_paths
-except ImportError:
-    from _bootstrap import ensure_project_paths
-
-ensure_project_paths()
-
 
 # author: Yun Chang
 # email: yunchang@mit.edu
 # rao* on fire-ice-sand model
 
-from utils import import_models
-import_models()
-from fismodel import fire_ice_sand_Model
+from models.fismodel import fire_ice_sand_Model
 from raostar import RAOStar
 from iterative_raostar import *
 

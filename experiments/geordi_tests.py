@@ -1,20 +1,11 @@
 #!/usr/bin/env python
-try:
-    from ._bootstrap import ensure_project_paths
-except ImportError:
-    from _bootstrap import ensure_project_paths
-
-ensure_project_paths()
-
 
 # author: Matt Deyo
 # email: mdeyo@mit.edu
 # simple vehicle models based on MERS Toyota work for rao star
 
-from utils import import_models
-import_models()
-from vehicle_model import *
-from geordi_road_model import *
+from models.vehicle_model import *
+from models.geordi_road_model import *
 from raostar import RAOStar
 
 road_model = highway_2_lanes_offramp_ex()

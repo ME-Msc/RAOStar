@@ -1,20 +1,11 @@
 #!/usr/bin/env python
-try:
-    from ._bootstrap import ensure_project_paths
-except ImportError:
-    from _bootstrap import ensure_project_paths
-
-ensure_project_paths()
-
 
 # author: Yun Chang
 # email: yunchang@mit.edu
 # rao* on quadcopter with guest model
 
-from utils import import_models
-import_models()
 
-from quad_model import QuadModel
+from models.quad_model import QuadModel
 from raostar import RAOStar
 
 import graph_to_json

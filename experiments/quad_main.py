@@ -1,21 +1,12 @@
 #!/usr/bin/env python 
-try:
-    from ._bootstrap import ensure_project_paths
-except ImportError:
-    from _bootstrap import ensure_project_paths
-
-ensure_project_paths()
-
 
 # Visual demo for rao* implementation on quad-with-friend model  
 # Yun Chang 2017 
 # yunchang@mit.edu
 
 from simulators import quad_sim
-from utils import import_models
-import_models()
 
-from quad_model import QuadModel
+from models.quad_model import QuadModel
 from raostar import RAOStar
 import numpy as np 
 
