@@ -17,7 +17,7 @@ if __name__ == '__main__':
 
     length = 3
     model = R2D2Model(length)
-    b_init = {(1, 0, 0): 1.0}
+    b_init = model.initial_belief()
 
     algo = iRAO_Executive(model, b_init, cc=cc, debugging=True, cc_type='o')
 

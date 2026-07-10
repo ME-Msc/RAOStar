@@ -11,50 +11,89 @@ from belief import BeliefState
 class R2D2Model(object):
     # noted there are 7 blocks total, A through G
     # G is the goal, F is fire
-    def __init__(self, length=1, DetermObs=True):
-        # icy blocks are defined blocks that are icy
-        self.icy_blocks = []
-        self.icy_blocks_lookup = {}
-        for i in range(length + 1):
-            icy = (1, i)
-            self.icy_blocks.append((1, i))
-            self.icy_blocks_lookup[icy] = 1
+    DEFAULT_ACTION_COST = {
+        "down": 1,
+        "right": 1,
+        "up": 1,
+        "left": 1,
+    }
 
-        self.icy_move_forward_prob = 0.8
+    def __init__(self, length=1, DetermObs=True, obsProb=0.6,
+                 icy_move_forward_prob=0.8, icy_blocks=None,
+                 fire_blocks=None, blocked_blocks=None, allow_left=False,
+                 action_cost=DEFAULT_ACTION_COST):
+        if length < 1:
+            raise ValueError('length must be positive')
+        if not 0.0 <= obsProb <= 1.0:
+            raise ValueError('obsProb must be between 0 and 1')
+        if not 0.0 <= icy_move_forward_prob <= 1.0:
+            raise ValueError('icy_move_forward_prob must be between 0 and 1')
+        if not isinstance(action_cost, dict):
+            raise TypeError('action_cost must be a dictionary')
+        required_actions = {'down', 'right', 'up'}
+        if allow_left:
+            required_actions.add('left')
+        missing_actions = required_actions - set(action_cost)
+        if missing_actions:
+            raise ValueError('missing action costs: ' + str(sorted(missing_actions)))
+        if any(action_cost[name] <= 0.0 for name in required_actions):
+            raise ValueError('action costs must be positive')
+
+        # icy blocks are defined blocks that are icy
+        if icy_blocks is None:
+            self.icy_blocks = [(1, i) for i in range(length + 1)]
+        else:
+            self.icy_blocks = [tuple(block) for block in icy_blocks]
+        self.icy_blocks_lookup = {block: 1 for block in self.icy_blocks}
+
+        self.icy_move_forward_prob = icy_move_forward_prob
         self.DetermObs = DetermObs
-        # if observation deterministic or not. If determinstic, once move,
-        # no excatly where it is. If not, P(o_k+1|s_k+1) = 0.6 for the cell
-        # it actually is in and 0.1 for the neighborinf cells
-        if not self.DetermObs:
-            self.obsProb = 0.6
+        self.obsProb = obsProb
+        self.action_cost = action_cost.copy()
         # environment will be represented as a 3 x 3 grid, with (2,0) and (2,2) blocked
         # top left corner of grid is (0,0) and first index is row
         self.length = length
         self.env = np.zeros([3, 2 + self.length])
 
         # setup bottom left and right corners as impassible
-        self.env[2, 0] = 1
-        self.env[2, self.length + 1] = 1
+        if blocked_blocks is None:
+            self.blocked_blocks = [(2, 0), (2, self.length + 1)]
+        else:
+            self.blocked_blocks = [tuple(block) for block in blocked_blocks]
+        for block in self.blocked_blocks:
+            self.env[block] = 1
 
         # fire located at self.env[2,1]: terminal
-        self.fires = []
-        for i in range(self.length):
-            self.fires.append((2, i + 1))
+        if fire_blocks is None:
+            self.fires = [(2, i + 1) for i in range(self.length)]
+        else:
+            self.fires = [tuple(block) for block in fire_blocks]
 
         # goal position
         self.goal = (1, self.length + 1)
+        if self.goal in self.icy_blocks + self.fires + self.blocked_blocks:
+            raise ValueError('goal cannot be icy, on fire, or blocked')
+        if (1, 0) in self.fires + self.blocked_blocks:
+            raise ValueError('start cannot be on fire or blocked')
+        if set(self.icy_blocks) & (set(self.fires) | set(self.blocked_blocks)):
+            raise ValueError('icy blocks cannot overlap fire or blocked blocks')
+        if set(self.fires) & set(self.blocked_blocks):
+            raise ValueError('fire blocks cannot overlap blocked blocks')
 
         self.optimization = 'minimize'  # want to minimize the steps to goal
-        self.action_map = {
-            "right": 5,
-            "left": 6,
-            "up": 7,
-            "down": 8
+        self.action_symbols = {
+            "right": "->",
+            "left": "<-",
+            "up": "^",
+            "down": "v",
         }
         self.action_list = [(1, 0, "down"), (0, 1, "right"),
-                            (-1, 0, "up"), (0, -1, "left")]
-        self.action_list = [(1, 0, "down"), (0, 1, "right"),
                             (-1, 0, "up")]
+        if allow_left:
+            self.action_list.append((0, -1, "left"))
+
+    def initial_belief(self):
+        return {(1, 0, 0): 1.0}
 
     def state_valid(self, state):  # check if a particular state is valid
         if state[0] < 0 or state[1] < 0:
@@ -82,7 +121,7 @@ class R2D2Model(object):
             newy = state[1] + act[1]
             if self.state_valid((newx, newy)):
                 validActions.append(act)
-        if state == self.goal:
+        if (state[0], state[1]) == self.goal:
             return []
         if self.in_a_fire(state):
             return []
@@ -94,7 +133,7 @@ class R2D2Model(object):
     def is_terminal(self, state):
         # For some reason we get a BeliefState here when deadend state found
         if isinstance(state, BeliefState):
-            state = state.belief.keys()[0]
+            state = next(iter(state.belief))
         # Added fire state to terminal to differentiate it from deadends
         return state[0] == self.goal[0] and state[1] == self.goal[1] or self.in_a_fire(state)
 
@@ -106,7 +145,9 @@ class R2D2Model(object):
         intended_new_state = (state[0] + action[0],
                               state[1] + action[1], state[2] + 1)
         if not self.state_valid(intended_new_state):
-            return newstates
+            # Keep probability mass when this action came from another particle
+            # in the same belief state.
+            return [[(state[0], state[1], state[2] + 1), 1.0]]
 
         if (state[0], state[1]) in self.icy_blocks and "right" in action:
             # print('got right action!')
@@ -135,32 +176,37 @@ class R2D2Model(object):
     def observations(self, state):
         if self.DetermObs:
             return [(state, 1.0)]
-        else:  # robot only knows if it is on icy or non icy block
-            if state in self.icy_blocks:
-                return [(self.icy_blocks[i], 1 / len(self.icy_blocks)) for i in range(len(self.icy_blocks))]
-            else:
-                prob = 1 / (6 - len(self.icy_blocks))
-                dist = []
-                for i in range(3):
-                    for j in range(3):
-                        if self.env[i, j] == 0 and (i, j) not in self.icy_blocks:
-                            dist.append((i, j), prob)
-                return dist
+
+        # Terminal outcomes are observed exactly so violating and safe paths do
+        # not become mixed in a single belief state.
+        if self.is_terminal(state):
+            return [(state, 1.0)]
+
+        position = (state[0], state[1])
+        neighboring_cells = []
+        for row_delta, col_delta in [(-1, 0), (0, 1), (1, 0), (0, -1)]:
+            neighbor = (position[0] + row_delta, position[1] + col_delta)
+            if self.state_valid(neighbor) and not self.is_terminal(neighbor):
+                neighboring_cells.append(neighbor)
+
+        if not neighboring_cells:
+            return [(position, 1.0)]
+
+        wrong_prob = (1.0 - self.obsProb) / len(neighboring_cells)
+        return [(position, self.obsProb)] + [
+            (neighbor, wrong_prob) for neighbor in neighboring_cells
+        ]
 
     def state_risk(self, state):
         # For some reason we get a BeliefState here when deadend state found
         if isinstance(state, BeliefState):
-            state = state.belief.keys()[0]
+            state = next(iter(state.belief))
         if self.in_a_fire(state):
             return 1.0
         return 0.0
 
     def costs(self, action):
-        return 1  # try uniform cost for all actions
-        # if action[2] == "up":
-        #     return 2  # bias against up action, models climbing above ice as harder
-        # else:
-        #     return 1
+        return self.action_cost[action[2]]
 
     def values(self, state, action):
         # return value (heuristic + cost)
@@ -172,11 +218,11 @@ class R2D2Model(object):
         # return self.costs(action) + self.heuristic(state)
 
     def heuristic(self, state):
-        # square of euclidean distance as heuristic
-        # mdeyo: found this issue! We are trying to minimize the values so the
-        # heuristic should be an underestimate,which the square of distance is
-        # not if each action then cost 1 or 2
-        return np.sqrt(sum([(self.goal[i] - state[i])**2 for i in range(2)]))
+        # Euclidean distance times the cheapest action cost is an optimistic
+        # estimate of the remaining path cost.
+        min_action_cost = min(self.costs(action) for action in self.action_list)
+        return min_action_cost * np.sqrt(
+            sum([(self.goal[i] - state[i])**2 for i in range(2)]))
 
     def execution_risk_heuristic(self, state):
         # sqaure of euclidean distance to fire as heuristic
@@ -207,26 +253,27 @@ class R2D2Model(object):
 
     def print_policy(self, policy):
         height, width = self.env.shape
-        policy_map = np.zeros([height, width])
+        policy_map = np.full([height, width], "", dtype=object)
         depth_found = {}
 
         for key in policy:
-            coords = key.split(":")[0].split("(")[1].split(")")[0]
+            belief_name = key[0] if isinstance(key, tuple) else key
+            coords = belief_name.split(":")[0].split("(")[1].split(")")[0]
             col = int(coords.split(",")[0])
             row = int(coords.split(",")[1])
-            depth = int(coords.split(",")[2])
+            depth = key[2] if isinstance(key, tuple) else int(coords.split(",")[2])
             col_row_str = str(col) + ',' + str(row)
             action_string = policy[key]
 
-            for action_name in self.action_map:
+            for action_name, action_symbol in self.action_symbols.items():
                 if action_name in action_string:
                     if col_row_str not in depth_found:  # first depth found
                         depth_found[col_row_str] = depth
-                        policy_map[col][row] = self.action_map[action_name]
+                        policy_map[col][row] = action_symbol
                         break
                     elif depth < depth_found[col_row_str]:
                         depth_found[col_row_str] = depth
-                        policy_map[col][row] = self.action_map[action_name]
+                        policy_map[col][row] = action_symbol
                         break
         print(" ")
         print("         ** Policy **")
@@ -241,14 +288,5 @@ class R2D2Model(object):
                 elif self.env[j][i]:
                     row_str += " [----] "
                 else:
-                    if policy_map[j][i] == 5:
-                        row_str += " [ -> ] "
-                    if policy_map[j][i] == 6:
-                        row_str += " [ <- ] "
-                    if policy_map[j][i] == 7:
-                        row_str += " [ ^^ ] "
-                    if policy_map[j][i] == 8:
-                        row_str += " [ vv ] "
-                    if policy_map[j][i] == 0:
-                        row_str += " [    ] "
+                    row_str += " [ " + policy_map[j][i].center(2) + " ] "
             print(row_str)

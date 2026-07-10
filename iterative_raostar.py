@@ -1,3 +1,5 @@
+import copy
+
 from belief import BeliefState
 
 ###############
@@ -6,7 +8,7 @@ from belief import BeliefState
 # by the stochastic behavior of RIGHT at (1,0)
 ###############
 # ice_blocks = [(1, 0), (1, 1)]
-# model = R2D2Model(ice_blocks)
+# model = R2D2Model(length=3, icy_blocks=ice_blocks)
 # algo = RAOStar(model, cc=0.09)
 # b_init = {(1, 0, 0): 1.0}
 # P, G = algo.search(b_init)
@@ -49,7 +51,6 @@ def next_child(G, state):
 
 def next_child_agent_action(G, state, agent_action):
     next_child = None
-    most_probable = 0
     print('current', state.state.state_print())
     for i, child in enumerate(G.hyperedge_successors(state, state.best_action)):
         if child.best_action:
@@ -65,9 +66,6 @@ def next_child_agent_action(G, state, agent_action):
     else:
         print('## Policy complete ##')
     return next_child
-
-
-import copy
 
 
 def most_likely_next_state(G, model, node):
@@ -97,7 +95,7 @@ def most_likely_policy(G, model):
 
     final_state = last_s.state
     if isinstance(last_s.state, BeliefState):
-        final_state = last_s.state.belief.keys()[0]
+        final_state = next(iter(last_s.state.belief))
     if model.is_terminal(final_state):
         print('finished search!')
     else:
@@ -121,7 +119,7 @@ def best_action_children(G, P, print_out=False):
 
 def match_state(list_of_nodes, state):
     for i, child in enumerate(list_of_nodes):
-        child_state = child.state.belief.keys()[0]
+        child_state = next(iter(child.state.belief))
         if state[0] == child_state[0] and state[1] == child_state[1]:
             # print('Matched state ' + str(state) +
             #       " and child: " + child.name)
@@ -158,7 +156,7 @@ def make_observation(state, G, P):
 # to ensure the risk bound is met
 ###########
 # ice_blocks = [(1, 0), (1, 1)]
-# model = R2D2Model(ice_blocks)
+# model = R2D2Model(length=3, icy_blocks=ice_blocks)
 # algo = RAOStar(model, cc=0.09)
 # b_init = {(1, 1, 0): 1.0}
 # P, G = algo.search(b_init)

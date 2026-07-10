@@ -20,7 +20,7 @@ if __name__ == '__main__':
     model = R2D2Model(length)
     algo = RAOStar(model, cc=cc, debugging=True, cc_type='o')
 
-    b_init = {(1, 0, 0): 1.0}
+    b_init = model.initial_belief()
     P, G = algo.search(b_init)
     print(P)
     P = iterative_raostar.clean_policy(P)

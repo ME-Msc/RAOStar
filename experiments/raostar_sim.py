@@ -19,6 +19,8 @@ def get_next_state(current_state, model, graph):
     # print('risk', risk)
     if risk == 1.0:
         return "crash"
+    if model.is_terminal(current_state.state):
+        return 'done'
     action = current_state.best_action
 
     if not action:
@@ -45,6 +47,11 @@ def get_next_state(current_state, model, graph):
             threshold += action.properties['prob'][outcome_index]
             outcome_index += 1
 
+    if model.state_risk(outcome.state) == 1.0:
+        return 'crash'
+    if model.is_terminal(outcome.state):
+        return 'done'
+
     # print('outcome', outcome)
     return outcome
 
@@ -61,20 +68,21 @@ if __name__ == '__main__':
         num_sims = int(sys.argv[2])
 
     ice_blocks = [(1, 0), (1, 1)]
-    model = R2D2Model(ice_blocks)
+    model = R2D2Model(length=3, DetermObs=True, icy_blocks=ice_blocks)
     algo = RAOStar(model, cc=cc, debugging=False)
-    b_init = {(1, 0, 0): 1.0}
+    b_init = model.initial_belief()
     P, G = algo.search(b_init)
     P = iterative_raostar.clean_policy(P)  # remove empty policies
 
     num_crashes = 0
     num_successes = 0
+    max_steps = max(node.depth for node in G.nodes.values())
 
     # Got offline policy and graph, now need to simulate execution
     for i in range(num_sims):
         current_state = G.root
 
-        for j in range(5):
+        for j in range(max_steps):
             next_state = get_next_state(current_state, model, G)
             current_state = next_state
             if current_state == 'crash':
