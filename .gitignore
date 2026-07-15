@@ -38,3 +38,6 @@ htmlcov/
 
 # Generated JSON results
 *.json
+
+# Generated visualization results
+results/*.html
